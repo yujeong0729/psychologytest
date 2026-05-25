@@ -1,0 +1,314 @@
+<style>
+*{box-sizing:border-box;}
+.phone{background:#111;border-radius:22px;overflow:hidden;width:176px;flex-shrink:0;display:flex;flex-direction:column;border:2px solid #333;}
+.phone-notch{background:#111;height:20px;display:flex;align-items:center;justify-content:center;}
+.notch-bar{width:50px;height:5px;background:#2a2a2a;border-radius:10px;}
+.video-area{background:#1a1a1a;position:relative;aspect-ratio:9/14;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.play-btn{width:32px;height:32px;background:rgba(255,255,255,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid rgba(255,255,255,0.2);transition:background 0.15s;}
+.play-btn:hover{background:rgba(255,255,255,0.22);}
+.ctrl-panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;flex:1;min-width:0;}
+.ctrl-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);gap:6px;position:relative;}
+.ctrl-row:last-of-type{border-bottom:none;}
+.ctrl-label{font-size:11px;color:var(--color-text-secondary);display:flex;align-items:center;gap:4px;flex:1;min-width:0;}
+.toggle{width:34px;height:19px;border-radius:10px;border:none;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;}
+.toggle::after{content:'';position:absolute;top:2.5px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left 0.2s;}
+.tog-on{background:#e53e3e;}.tog-on::after{left:18px;}
+.tog-off-g{background:#3B6D11;}.tog-off-g::after{left:2px;}
+.tog-off-n{background:#888;}.tog-off-n::after{left:2px;}
+.reason-bubble{display:none;position:absolute;right:0;top:calc(100% + 4px);z-index:20;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;width:190px;font-size:11px;line-height:1.5;}
+.reason-bubble.show{display:block;}
+.reason-bubble::before{content:'';position:absolute;top:-5px;right:20px;width:8px;height:8px;background:var(--color-background-primary);border-top:0.5px solid var(--color-border-secondary);border-left:0.5px solid var(--color-border-secondary);transform:rotate(45deg);}
+.reason-title{font-size:11px;font-weight:500;margin-bottom:3px;}
+.reason-body{font-size:10.5px;color:var(--color-text-secondary);line-height:1.5;}
+.r-danger .reason-title{color:#A32D2D;}
+.r-safe .reason-title{color:#27500A;}
+.r-warn .reason-title{color:#633806;}
+.score-track{height:8px;background:var(--color-background-tertiary);border-radius:4px;overflow:hidden;margin-top:4px;}
+.score-fill{height:100%;border-radius:4px;transition:width 0.4s;}
+.viewers-badge{font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(0,0,0,0.65);color:#fff;display:flex;align-items:center;gap:3px;position:absolute;top:8px;left:6px;}
+.live-badge{font-size:9px;padding:2px 5px;border-radius:3px;background:#e53e3e;color:#fff;position:absolute;top:8px;right:6px;}
+.autoplay-ind{position:absolute;bottom:28px;left:6px;right:6px;font-size:9px;border-radius:4px;padding:3px 6px;display:flex;align-items:center;justify-content:space-between;transition:all 0.2s;}
+.ap-on{background:rgba(229,62,62,0.85);color:#fff;}
+.ap-off{background:rgba(59,109,17,0.85);color:#fff;}
+.next-videos{position:absolute;bottom:36px;left:6px;right:6px;background:rgba(0,0,0,0.82);border-radius:5px;padding:4px 5px;}
+.nv-item{display:flex;align-items:center;gap:4px;padding:2px 0;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.nv-item:last-child{border-bottom:none;}
+.nv-thumb{width:28px;height:18px;background:#2a2a2a;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.nv-text{font-size:8px;color:#ddd;line-height:1.3;}
+.close-btn-big{position:absolute;top:7px;right:6px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.4);color:#fff;border-radius:6px;font-size:10px;padding:4px 8px;cursor:pointer;display:flex;align-items:center;gap:3px;transition:background 0.15s;}
+.close-btn-small{position:absolute;top:7px;right:6px;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.35);border-radius:4px;font-size:8px;padding:2px 4px;cursor:pointer;}
+.time-disp{position:absolute;bottom:28px;left:6px;font-size:9px;color:#aaa;background:rgba(0,0,0,0.5);padding:2px 5px;border-radius:3px;}
+.prog-bar{position:absolute;bottom:8px;left:6px;right:6px;}
+.prog-track{height:3px;background:rgba(255,255,255,0.15);border-radius:2px;cursor:pointer;}
+.prog-fill{height:100%;border-radius:2px;transition:width 0.3s;}
+.event-log{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:6px 10px;max-height:80px;overflow-y:auto;}
+.log-item{font-size:10.5px;color:var(--color-text-secondary);padding:2px 0;display:flex;align-items:center;gap:5px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.log-item:last-child{border-bottom:none;}
+.log-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.info-btn{width:16px;height:16px;border-radius:50%;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary);flex-shrink:0;transition:background 0.15s;}
+.info-btn:hover,.info-btn.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info);}
+</style>
+
+<h2 class="sr-only">다크 패턴 인터랙티브 시뮬레이터 — 각 요소의 위험/안전 이유를 ? 버튼으로 확인하세요</h2>
+
+<div style="padding:1rem 0;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+
+<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:12px;">
+  <div style="font-size:12px;font-weight:500;color:#A32D2D;margin-bottom:10px;display:flex;align-items:center;gap:5px;">
+    <i class="ti ti-alert-triangle" aria-hidden="true" style="font-size:13px;"></i> 화면 A — 직접 조작
+  </div>
+  <div style="display:flex;gap:10px;align-items:flex-start;">
+    <div>
+      <div class="phone">
+        <div class="phone-notch"><div class="notch-bar"></div></div>
+        <div class="video-area" id="sa">
+          <div class="play-btn" onclick="togglePlay('a')"><i class="ti ti-player-play" id="pi-a" style="font-size:13px;color:#fff;" aria-hidden="true"></i></div>
+          <div class="viewers-badge" id="vb"><i class="ti ti-eye" style="font-size:9px;" aria-hidden="true"></i><span id="vc">13명 시청 중</span></div>
+          <div class="live-badge">LIVE</div>
+          <div class="autoplay-ind ap-on" id="api">
+            <span><i class="ti ti-player-skip-forward" style="font-size:9px;vertical-align:-1px;" aria-hidden="true"></i> 자동재생</span>
+            <span id="aps">켜짐</span>
+          </div>
+          <div id="nvb" class="next-videos">
+            <div style="font-size:8px;color:#fc8181;margin-bottom:2px;" id="nl">다음 영상 자동재생 — 3초 후</div>
+            <div class="nv-item"><div class="nv-thumb"><i class="ti ti-player-play" style="font-size:9px;color:#888;" aria-hidden="true"></i></div><div class="nv-text">추천 영상 1 — 지금 바로</div></div>
+            <div class="nv-item"><div class="nv-thumb"><i class="ti ti-player-play" style="font-size:9px;color:#888;" aria-hidden="true"></i></div><div class="nv-text">추천 영상 2 — 인기 급상승</div></div>
+          </div>
+          <div class="prog-bar"><div class="prog-track" onclick="seekV('a',event)"><div class="prog-fill" id="pa" style="width:70%;background:#e53e3e;"></div></div></div>
+        </div>
+      </div>
+      <div style="text-align:center;font-size:11px;font-weight:500;color:#A32D2D;margin-top:5px;">다크 패턴</div>
+    </div>
+    <div class="ctrl-panel">
+      <div class="ctrl-row" id="row-a-ap">
+        <span class="ctrl-label"><i class="ti ti-player-skip-forward" aria-hidden="true" style="font-size:12px;"></i>자동재생</span>
+        <button class="info-btn" id="ib-a-ap" onclick="toggleReason('a-ap')" aria-label="자동재생 설명">?</button>
+        <button class="toggle tog-on" id="ta-ap" onclick="toggleA('autoplay')" aria-label="자동재생 토글"></button>
+        <div class="reason-bubble r-danger" id="rb-a-ap">
+          <div class="reason-title"><i class="ti ti-alert-circle" style="font-size:11px;vertical-align:-1px;" aria-hidden="true"></i> 왜 위험한가?</div>
+          <div class="reason-body">자동재생이 켜지면 사용자가 의식하지 않은 채 다음 영상으로 넘어갑니다. 이탈 의지를 무력화하는 핵심 다크 패턴입니다.</div>
+        </div>
+      </div>
+      <div class="ctrl-row" id="row-a-v">
+        <span class="ctrl-label"><i class="ti ti-users" aria-hidden="true" style="font-size:12px;"></i>시청자 수</span>
+        <button class="info-btn" id="ib-a-v" onclick="toggleReason('a-v')" aria-label="시청자 수 설명">?</button>
+        <button class="toggle tog-on" id="ta-v" onclick="toggleA('viewers')" aria-label="시청자 수 토글"></button>
+        <div class="reason-bubble r-danger" id="rb-a-v">
+          <div class="reason-title"><i class="ti ti-alert-circle" style="font-size:11px;vertical-align:-1px;" aria-hidden="true"></i> 사회적 증거 압박</div>
+          <div class="reason-body">"13명 시청 중"은 FOMO(Fear of Missing Out)를 유발합니다. 지금 보지 않으면 뒤처진다는 심리적 압박으로 이탈을 막습니다.</div>
+        </div>
+      </div>
+      <div class="ctrl-row" id="row-a-nl">
+        <span class="ctrl-label"><i class="ti ti-layout-list" aria-hidden="true" style="font-size:12px;"></i>추천 목록</span>
+        <button class="info-btn" id="ib-a-nl" onclick="toggleReason('a-nl')" aria-label="추천 목록 설명">?</button>
+        <button class="toggle tog-on" id="ta-nl" onclick="toggleA('nextlist')" aria-label="추천 목록 토글"></button>
+        <div class="reason-bubble r-danger" id="rb-a-nl">
+          <div class="reason-title"><i class="ti ti-alert-circle" style="font-size:11px;vertical-align:-1px;" aria-hidden="true"></i> 종료 경로 차단</div>
+          <div class="reason-body">영상 종료 직전 추천 목록을 가득 채워 종료 버튼을 찾기 어렵게 만듭니다. 사용자의 시선을 다음 콘텐츠로 강제 유도합니다.</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <div style="font-size:10.5px;color:var(--color-text-secondary);margin-bottom:4px;">진행 바</div>
+        <input type="range" min="0" max="100" value="70" step="1" id="sl-a" style="width:100%;" oninput="setP('a',this.value)" aria-label="A 재생위치">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:12px;">
+  <div style="font-size:12px;font-weight:500;color:#3B6D11;margin-bottom:10px;display:flex;align-items:center;gap:5px;">
+    <i class="ti ti-circle-check" aria-hidden="true" style="font-size:13px;"></i> 화면 B — 직접 조작
+  </div>
+  <div style="display:flex;gap:10px;align-items:flex-start;">
+    <div>
+      <div class="phone">
+        <div class="phone-notch"><div class="notch-bar"></div></div>
+        <div class="video-area" id="sb">
+          <div class="play-btn" onclick="togglePlay('b')"><i class="ti ti-player-play" id="pi-b" style="font-size:13px;color:#fff;" aria-hidden="true"></i></div>
+          <button class="close-btn-big" id="cb-b" onclick="clickClose()"><i class="ti ti-x" style="font-size:11px;" aria-hidden="true"></i> 종료</button>
+          <div id="td-b" class="time-disp"><i class="ti ti-clock" style="font-size:8px;vertical-align:-1px;" aria-hidden="true"></i> <span id="tt">8:24 / 20:00</span></div>
+          <div class="prog-bar"><div class="prog-track" onclick="seekV('b',event)"><div class="prog-fill" id="pb" style="width:42%;background:#63b3ed;"></div></div></div>
+        </div>
+      </div>
+      <div style="text-align:center;font-size:11px;font-weight:500;color:#3B6D11;margin-top:5px;">사용자 중심</div>
+    </div>
+    <div class="ctrl-panel">
+      <div class="ctrl-row" id="row-b-cs">
+        <span class="ctrl-label"><i class="ti ti-x" aria-hidden="true" style="font-size:12px;"></i>종료 버튼 크기</span>
+        <button class="info-btn" id="ib-b-cs" onclick="toggleReason('b-cs')" aria-label="종료 버튼 설명">?</button>
+        <button class="toggle tog-off-g" id="tb-cs" onclick="toggleB('closesize')" aria-label="종료 버튼 크기 토글"></button>
+        <div class="reason-bubble r-safe" id="rb-b-cs">
+          <div class="reason-title"><i class="ti ti-circle-check" style="font-size:11px;vertical-align:-1px;" aria-hidden="true"></i> 왜 안전한가?</div>
+          <div class="reason-body">종료 버튼이 크고 명확할수록 사용자가 쉽게 빠져나올 수 있습니다. 버튼을 숨기거나 작게 만드는 것이 대표적인 다크 패턴입니다.</div>
+        </div>
+      </div>
+      <div class="ctrl-row" id="row-b-t">
+        <span class="ctrl-label"><i class="ti ti-clock" aria-hidden="true" style="font-size:12px;"></i>시간 표시</span>
+        <button class="info-btn" id="ib-b-t" onclick="toggleReason('b-t')" aria-label="시간 표시 설명">?</button>
+        <button class="toggle tog-off-g" id="tb-t" onclick="toggleB('time')" aria-label="시간 표시 토글"></button>
+        <div class="reason-bubble r-safe" id="rb-b-t">
+          <div class="reason-title"><i class="ti ti-circle-check" style="font-size:11px;vertical-align:-1px;" aria-hidden="true"></i> 시청 인지 보장</div>
+          <div class="reason-body">현재 시각과 총 재생 시간을 보여주면 사용자가 얼마나 시청했는지 의식할 수 있습니다. 숨기면 무한 시청을 유도하는 패턴이 됩니다.</div>
+        </div>
+      </div>
+      <div class="ctrl-row" id="row-b-ap">
+        <span class="ctrl-label"><i class="ti ti-player-skip-forward" aria-hidden="true" style="font-size:12px;"></i>자동재생</span>
+        <button class="info-btn" id="ib-b-ap" onclick="toggleReason('b-ap')" aria-label="자동재생 B 설명">?</button>
+        <button class="toggle tog-off-n" id="tb-ap" onclick="toggleB('autoplay')" aria-label="자동재생 B 토글"></button>
+        <div class="reason-bubble r-warn" id="rb-b-ap">
+          <div class="reason-title"><i class="ti ti-alert-triangle" style="font-size:11px;vertical-align:-1px;" aria-hidden="true"></i> 켜면 선택권 약화</div>
+          <div class="reason-body">B화면에서도 자동재생을 켜면 사용자 중심 설계가 무너집니다. 기본값을 꺼짐으로 유지하고 사용자가 직접 켤 수 있어야 합니다.</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <div style="font-size:10.5px;color:var(--color-text-secondary);margin-bottom:4px;">진행 바</div>
+        <input type="range" min="0" max="100" value="42" step="1" id="sl-b" style="width:100%;" oninput="setP('b',this.value)" aria-label="B 재생위치">
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+  <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:11px;color:var(--color-text-secondary);">A 위험도</span>
+      <span style="font-size:15px;font-weight:500;color:#A32D2D;" id="sa-n">100%</span>
+    </div>
+    <div class="score-track"><div class="score-fill" id="sa-b" style="width:100%;background:#E24B4A;"></div></div>
+  </div>
+  <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:11px;color:var(--color-text-secondary);">B 안전도</span>
+      <span style="font-size:15px;font-weight:500;color:#3B6D11;" id="sb-n">67%</span>
+    </div>
+    <div class="score-track"><div class="score-fill" id="sb-b" style="width:67%;background:#639922;"></div></div>
+  </div>
+</div>
+
+<div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:5px;display:flex;align-items:center;gap:4px;">
+  <i class="ti ti-list" aria-hidden="true" style="font-size:13px;"></i> 조작 기록
+</div>
+<div class="event-log" id="elog">
+  <div class="log-item"><span class="log-dot" style="background:#888;"></span>? 버튼을 눌러 각 요소의 이유를 확인해 보세요</div>
+</div>
+</div>
+
+<script>
+const stA={autoplay:true,viewers:true,nextlist:true};
+const stB={closesize:true,time:true,autoplay:false};
+const openReasons={};
+
+function toggleReason(id){
+  const el=document.getElementById('rb-'+id);
+  const btn=document.getElementById('ib-'+id);
+  const isOpen=el.classList.contains('show');
+  document.querySelectorAll('.reason-bubble.show').forEach(b=>b.classList.remove('show'));
+  document.querySelectorAll('.info-btn.active').forEach(b=>b.classList.remove('active'));
+  if(!isOpen){el.classList.add('show');btn.classList.add('active');}
+}
+
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.ctrl-row')){
+    document.querySelectorAll('.reason-bubble.show').forEach(b=>b.classList.remove('show'));
+    document.querySelectorAll('.info-btn.active').forEach(b=>b.classList.remove('active'));
+  }
+});
+
+function addLog(msg,color){
+  const log=document.getElementById('elog');
+  const item=document.createElement('div');
+  item.className='log-item';
+  item.innerHTML='<span class="log-dot" style="background:'+color+';"></span>'+msg;
+  log.insertBefore(item,log.firstChild);
+  if(log.children.length>8)log.removeChild(log.lastChild);
+}
+
+function updateScoreA(){
+  let s=(stA.autoplay?40:0)+(stA.viewers?30:0)+(stA.nextlist?30:0);
+  document.getElementById('sa-n').textContent=s+'%';
+  document.getElementById('sa-b').style.width=s+'%';
+}
+function updateScoreB(){
+  let s=(stB.closesize?34:0)+(stB.time?33:0)+(!stB.autoplay?33:0);
+  document.getElementById('sb-n').textContent=s+'%';
+  document.getElementById('sb-b').style.width=s+'%';
+}
+
+function toggleA(k){
+  stA[k]=!stA[k];const on=stA[k];
+  if(k==='autoplay'){
+    document.getElementById('api').className='autoplay-ind '+(on?'ap-on':'ap-off');
+    document.getElementById('aps').textContent=on?'켜짐':'꺼짐';
+    document.getElementById('ta-ap').className='toggle '+(on?'tog-on':'tog-off-g');
+    document.getElementById('nl').textContent=on?'다음 영상 자동재생 — 3초 후':'다음 영상 (자동재생 꺼짐)';
+    addLog('A: 자동재생 '+(on?'켜짐 — 이탈 방지 강화':'꺼짐 — 사용자 선택 복원'),on?'#E24B4A':'#639922');
+  }
+  if(k==='viewers'){
+    document.getElementById('vb').style.display=on?'flex':'none';
+    document.getElementById('ta-v').className='toggle '+(on?'tog-on':'tog-off-g');
+    addLog('A: 시청자 수 '+(on?'표시 — 사회적 압박 유발':'숨김'),on?'#E24B4A':'#639922');
+  }
+  if(k==='nextlist'){
+    document.getElementById('nvb').style.display=on?'block':'none';
+    document.getElementById('ta-nl').className='toggle '+(on?'tog-on':'tog-off-g');
+    addLog('A: 추천 목록 '+(on?'표시 — 종료 경로 차단':'숨김'),on?'#E24B4A':'#639922');
+  }
+  updateScoreA();
+}
+
+function toggleB(k){
+  stB[k]=!stB[k];const on=stB[k];
+  if(k==='closesize'){
+    const b=document.getElementById('cb-b');
+    if(on){b.className='close-btn-big';b.innerHTML='<i class="ti ti-x" style="font-size:11px;" aria-hidden="true"></i> 종료';}
+    else{b.className='close-btn-small';b.innerHTML='<i class="ti ti-x" style="font-size:8px;" aria-hidden="true"></i>';}
+    document.getElementById('tb-cs').className='toggle '+(on?'tog-off-g':'tog-on');
+    addLog('B: 종료 버튼 '+(on?'크게 — 이탈 용이':'작게 — 이탈 방해'),on?'#639922':'#E24B4A');
+  }
+  if(k==='time'){
+    document.getElementById('td-b').style.display=on?'block':'none';
+    document.getElementById('tb-t').className='toggle '+(on?'tog-off-g':'tog-on');
+    addLog('B: 시간 표시 '+(on?'켜짐 — 시청량 인지 가능':'꺼짐 — 시청 인지 불가'),on?'#639922':'#E24B4A');
+  }
+  if(k==='autoplay'){
+    document.getElementById('tb-ap').className='toggle '+(on?'tog-on':'tog-off-n');
+    addLog('B: 자동재생 '+(on?'켜짐 — 선택권 약화':'꺼짐 — 선택권 보장'),on?'#E24B4A':'#639922');
+  }
+  updateScoreB();
+}
+
+function togglePlay(s){
+  const icon=document.getElementById('pi-'+s);
+  const playing=icon.classList.contains('ti-player-pause');
+  icon.className=playing?'ti ti-player-play':'ti ti-player-pause';
+  icon.style.fontSize='13px';icon.style.color='#fff';
+  addLog((s==='a'?'A':'B')+': '+(playing?'일시정지':'재생 시작'),'#378ADD');
+}
+
+function clickClose(){
+  addLog('B: 종료 버튼 클릭 — 사용자가 능동적으로 종료','#639922');
+  document.getElementById('pb').style.width='0%';
+  document.getElementById('sl-b').value=0;
+  document.getElementById('tt').textContent='0:00 / 20:00';
+  document.getElementById('pi-b').className='ti ti-player-play';
+  document.getElementById('pi-b').style.fontSize='13px';
+}
+
+function setP(s,v){
+  document.getElementById('p'+s).style.width=v+'%';
+  if(s==='b'){const c=Math.round(1200*v/100);document.getElementById('tt').textContent=Math.floor(c/60)+':'+String(c%60).padStart(2,'0')+' / 20:00';}
+  addLog((s==='a'?'A':'B')+': 진행 바 → '+v+'%','#378ADD');
+}
+
+function seekV(s,e){
+  const t=document.getElementById('p'+s+'-track')||e.currentTarget;
+  const rect=t.getBoundingClientRect();
+  const pct=Math.round(Math.max(0,Math.min(100,(e.clientX-rect.left)/rect.width*100)));
+  document.getElementById('p'+s).style.width=pct+'%';
+  document.getElementById('sl-'+s).value=pct;
+  if(s==='b'){const c=Math.round(1200*pct/100);document.getElementById('tt').textContent=Math.floor(c/60)+':'+String(c%60).padStart(2,'0')+' / 20:00';}
+  addLog((s==='a'?'A':'B')+': 진행 바 클릭 → '+pct+'%','#378ADD');
+}
+</script>
